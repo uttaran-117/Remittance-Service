@@ -26,7 +26,7 @@ import {
 
 /** Your deployed Soroban contract ID */
 export const CONTRACT_ADDRESS =
-  "CDJVMAX34YRCQ5JFC6SIOQOVSUY6XWEFYJOLF3SBCKU7CMI3IAP6HPWN";
+  "CAI5OFERBQTPOZ6GXEA564GVDFRC6EGDAAJB3YUKE5UHV7YTNJ2KYT7R";
 
 /** Network passphrase (testnet by default) */
 export const NETWORK_PASSPHRASE = Networks.TESTNET;
@@ -211,58 +211,80 @@ export function toScValBool(value: boolean): xdr.ScVal {
   return nativeToScVal(value, { type: "bool" });
 }
 
+export function toScValSymbol(value: string): xdr.ScVal {
+  return nativeToScVal(value, { type: "symbol" });
+}
+
 // ============================================================
-// Supply Chain Tracker — Contract Methods
+// Remittance Contract — Contract Methods
 // ============================================================
 
 /**
- * Add a product to the supply chain.
- * Calls: add_product(product_id: String, origin: String)
+ * Send a remittance (state-changing).
+ * Calls: send_remittance(sender: Address, receiver: Address, amount: i128, remittance_id: Symbol)
  */
-export async function addProduct(
+export async function sendRemittance(
   caller: string,
-  productId: string,
-  origin: string
+  receiver: string,
+  amount: bigint,
+  remittanceId: string
 ) {
   return callContract(
-    "add_product",
-    [toScValString(productId), toScValString(origin)],
+    "send_remittance",
+    [
+      toScValAddress(caller),
+      toScValAddress(receiver),
+      toScValI128(amount),
+      toScValSymbol(remittanceId),
+    ],
     caller,
     true
   );
 }
 
 /**
- * Update a product's status.
- * Calls: update_status(product_id: String, new_status: String)
+ * Claim a remittance (state-changing).
+ * Calls: claim_remittance(receiver: Address, remittance_id: Symbol) -> i128
  */
-export async function updateProductStatus(
+export async function claimRemittance(
   caller: string,
-  productId: string,
-  newStatus: string
-) {
-  return callContract(
-    "update_status",
-    [toScValString(productId), toScValString(newStatus)],
+  remittanceId: string
+): Promise<bigint> {
+  const result = await callContract(
+    "claim_remittance",
+    [toScValAddress(caller), toScValSymbol(remittanceId)],
     caller,
     true
-  );
+  ) as rpc.Api.GetSuccessfulTransactionResponse;
+  // Extract the returned amount from the transaction result
+  if (result.returnValue) {
+    return scValToNative(result.returnValue) as bigint;
+  }
+  return BigInt(0);
 }
 
 /**
- * Get product details (read-only).
- * Calls: get_product(product_id: String) -> Map<Symbol, String>
- * Returns: { origin: string, status: string } or null
+ * Get remittance details (read-only).
+ * Calls: get_remittance(remittance_id: Symbol) -> (Address, Address, i128)
+ * Returns: { 0: sender, 1: receiver, 2: amount } or null
  */
-export async function getProduct(
-  productId: string,
+export async function getRemittance(
+  remittanceId: string,
   caller?: string
-) {
-  return readContract(
-    "get_product",
-    [toScValString(productId)],
+): Promise<{ 0: string; 1: string; 2: bigint } | null> {
+  const result = await readContract(
+    "get_remittance",
+    [toScValSymbol(remittanceId)],
     caller
   );
+  if (result && Array.isArray(result) && result.length === 3) {
+    return {
+      0: result[0] as string,
+      1: result[1] as string,
+      2: BigInt(result[2] as string),
+    };
+  }
+  return null;
 }
 
 export { nativeToScVal, scValToNative, Address, xdr };

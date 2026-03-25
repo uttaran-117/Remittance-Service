@@ -1,71 +1,22 @@
-# 🌍 Soroban Remittance Service
+# Soroban Project
 
-## 📖 Project Description
+## Project Structure
 
-This project is a decentralized remittance service built using Soroban smart contracts on the Stellar network. It enables users to securely send and claim funds across borders without relying on traditional financial intermediaries.
+This repository uses the recommended structure for a Soroban project:
 
-The contract ensures transparency, security, and trustless execution of remittance transactions using blockchain technology.
+```text
+.
+├── contracts
+│   └── hello_world
+│       ├── src
+│       │   ├── lib.rs
+│       │   └── test.rs
+│       └── Cargo.toml
+├── Cargo.toml
+└── README.md
+```
 
----
-
-## 🚀 What it does
-
-* Allows a sender to initiate a remittance by specifying:
-
-  * Receiver address
-  * Amount
-  * Unique remittance ID
-
-* Stores remittance details on-chain until claimed
-
-* Enables only the intended receiver to claim the funds
-
-* Prevents double spending by removing claimed remittances
-
----
-
-## ✨ Features
-
-* 🔐 **Secure Authorization**
-  Uses Soroban's built-in authentication to ensure only authorized users can send or claim funds.
-
-* 🧾 **On-chain Record Keeping**
-  All remittance data is stored on-chain for transparency and auditability.
-
-* ⚡ **Fast & Low-cost Transactions**
-  Built on Stellar for efficient and inexpensive transfers.
-
-* 🎯 **Unique Remittance Tracking**
-  Each remittance is identified using a unique ID to avoid conflicts.
-
-* ♻️ **One-time Claim Mechanism**
-  Once claimed, the remittance is permanently removed from storage.
-
----
-
-## 🔗 Deployed Smart Contract Link
-
-XXX
-
----
-
-## 🛠️ Tech Stack
-
-* Rust
-* Soroban SDK
-* Stellar Network
-
----
-
-## 📌 Future Improvements
-
-* Add escrow time-lock functionality
-* Integrate token transfers instead of just storing values
-* Add fees for service sustainability
-* Build a frontend UI for easier interaction
-
----
-
-## 📜 License
-
-MIT License
+- New Soroban contracts can be put in `contracts`, each in their own directory. There is already a `hello_world` contract in there to get you started.
+- If you initialized this project with any other example contracts via `--with-example`, those contracts will be in the `contracts` directory as well.
+- Contracts should have their own `Cargo.toml` files that rely on the top-level `Cargo.toml` workspace for their dependencies.
+- Frontend libraries can be added to the top-level directory as well. If you initialized this project with a frontend template via `--frontend-template` you will have those files already included.
