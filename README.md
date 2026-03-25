@@ -5,6 +5,9 @@
 This project is a decentralized remittance service built using Soroban smart contracts on the Stellar network. It enables users to securely send and claim funds across borders without relying on traditional financial intermediaries.
 
 The contract ensures transparency, security, and trustless execution of remittance transactions using blockchain technology.
+<img width="1896" height="945" alt="Screenshot 2026-03-25 143343" src="https://github.com/user-attachments/assets/6b4fddb7-91a9-4109-a9e1-6c59fa2d0c37" />
+
+
 <img width="1913" height="1014" alt="image" src="https://github.com/user-attachments/assets/ff72cac4-5530-43df-ba28-f5d6d65f2369" />
 
 
