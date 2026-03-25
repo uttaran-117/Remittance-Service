@@ -288,3 +288,64 @@ export async function getRemittance(
 }
 
 export { nativeToScVal, scValToNative, Address, xdr };
+
+// ============================================================
+// Supply Chain Tracker — Contract Methods
+// ============================================================
+
+/**
+ * Add a new product (state-changing).
+ * Calls: add_product(product_id: String, origin: String)
+ */
+export async function addProduct(
+  caller: string,
+  productId: string,
+  origin: string
+) {
+  return callContract(
+    "add_product",
+    [toScValString(productId), toScValString(origin)],
+    caller,
+    true
+  );
+}
+
+/**
+ * Update product status (state-changing).
+ * Calls: update_status(product_id: String, new_status: String)
+ */
+export async function updateProductStatus(
+  caller: string,
+  productId: string,
+  newStatus: string
+) {
+  return callContract(
+    "update_status",
+    [toScValString(productId), toScValString(newStatus)],
+    caller,
+    true
+  );
+}
+
+/**
+ * Get product details (read-only).
+ * Calls: get_product(product_id: String) -> Map<Symbol, String>
+ */
+export async function getProduct(
+  productId: string,
+  caller?: string
+): Promise<Record<string, string> | null> {
+  const result = await readContract(
+    "get_product",
+    [toScValString(productId)],
+    caller
+  );
+  if (result && typeof result === "object") {
+    const mapped: Record<string, string> = {};
+    for (const [k, v] of Object.entries(result)) {
+      mapped[String(k)] = String(v);
+    }
+    return mapped;
+  }
+  return null;
+}
